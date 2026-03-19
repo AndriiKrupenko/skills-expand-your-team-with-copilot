@@ -569,6 +569,13 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-section">
+        <span class="share-label">Share:</span>
+        <button class="share-button share-twitter" data-activity="${name}" title="Share on X (Twitter)">𝕏</button>
+        <button class="share-button share-facebook" data-activity="${name}" title="Share on Facebook">f</button>
+        <button class="share-button share-whatsapp" data-activity="${name}" title="Share on WhatsApp">💬</button>
+        <button class="share-button share-copy" data-activity="${name}" title="Copy link">🔗</button>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +593,47 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    activityCard.querySelectorAll(".share-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const activityName = button.dataset.activity;
+        const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(activityName)}`;
+        const shareText = `Check out "${activityName}" at Mergington High School! 🎓`;
+
+        if (button.classList.contains("share-twitter")) {
+          window.open(
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        } else if (button.classList.contains("share-facebook")) {
+          window.open(
+            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        } else if (button.classList.contains("share-whatsapp")) {
+          window.open(
+            `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`,
+            "_blank",
+            "noopener,noreferrer"
+          );
+        } else if (button.classList.contains("share-copy")) {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            const original = button.textContent;
+            button.textContent = "✓";
+            button.classList.add("share-copy-success");
+            setTimeout(() => {
+              button.textContent = original;
+              button.classList.remove("share-copy-success");
+            }, 1500);
+          }).catch(() => {
+            button.title = "Could not copy — please copy the link manually.";
+          });
+        }
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
